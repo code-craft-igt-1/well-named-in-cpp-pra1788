@@ -1,18 +1,7 @@
 #include "ColorPair.h"
+#include "ColorPairConstants.h"
 
 namespace TelCoColorCoder {
-
-    // Define static member arrays
-    const char* ColorPair::MajorColorNames[] = {
-        "White", "Red", "Black", "Yellow", "Violet"
-    };
-
-    const char* ColorPair::MinorColorNames[] = {
-        "Blue", "Orange", "Green", "Brown", "Slate"
-    };
-
-    const int ColorPair::numberOfMajorColors = sizeof(MajorColorNames) / sizeof(MajorColorNames[0]);
-    const int ColorPair::numberOfMinorColors = sizeof(MinorColorNames) / sizeof(MinorColorNames[0]);
 
     ColorPair::ColorPair(MajorColor major, MinorColor minor)
         : majorColor(major), minorColor(minor)
@@ -34,14 +23,20 @@ namespace TelCoColorCoder {
     }
 
     ColorPair ColorPair::GetColorFromPairNumber(int pairNumber) {
+        if (pairNumber < 1 || pairNumber > NumberOfMajorColors * NumberOfMinorColors) {
+            throw std::out_of_range("Pair number out of range");
+        }
         int zeroBasedPairNumber = pairNumber - 1;
-        MajorColor majorColor = static_cast<MajorColor>(zeroBasedPairNumber / numberOfMinorColors);
-        MinorColor minorColor = static_cast<MinorColor>(zeroBasedPairNumber % numberOfMinorColors);
+        MajorColor majorColor = static_cast<MajorColor>(zeroBasedPairNumber / NumberOfMinorColors);
+        MinorColor minorColor = static_cast<MinorColor>(zeroBasedPairNumber % NumberOfMinorColors);
         return ColorPair(majorColor, minorColor);
     }
 
     int ColorPair::GetPairNumberFromColor(MajorColor major, MinorColor minor) {
-        return static_cast<int>(major) * numberOfMinorColors + static_cast<int>(minor) + 1;
+        if (static_cast<int>(major) >= NumberOfMajorColors || static_cast<int>(minor) >= NumberOfMinorColors) {
+            throw std::out_of_range("Major or minor color out of range");
+        }
+        return static_cast<int>(major) * NumberOfMinorColors + static_cast<int>(minor) + 1;
     }
 
 } // namespace TelCoColorCoder
